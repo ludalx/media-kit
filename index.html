@@ -487,6 +487,7 @@
 </div>
 
 <script>
+(function() {
   // ── CONFIG ──────────────────────────────────
   const YT_API_KEY = 'AIzaSyDCqgnGEYam3bLG1a2WEUr2NzxXQIwUjiA';
   const CHANNEL_ID = 'UCiELs1dxyTThkxGFFo7M6vA';
@@ -637,6 +638,7 @@
             <div class="film-title">${title}</div>
             <div class="film-meta"><span>${views} views</span><span>${likes} likes</span><span>${comments} comments</span></div>
           </div>`;
+      });
     } catch(err) {
       console.error(err);
       FEATURED_IDS.forEach((id, i) => {
@@ -688,6 +690,7 @@
   initBarAnimations();
   loadChannelStats();
   loadFeaturedFilms();
+})();
 </script>
 
 </body>
