@@ -828,8 +828,6 @@
 
   // ── STAT COUNTER ─────────────────────────────
   function animateStat(el, targetStr) {
-    // Parse value and suffix e.g. "127K" -> {num: 127, suffix: 'K'}
-    // or "9.4%" -> {num: 9.4, suffix: '%'}
     const match = targetStr.match(/^([\d.]+)(.*)$/);
     if (!match) { el.textContent = targetStr; return; }
     const num      = parseFloat(match[1]);
@@ -850,15 +848,20 @@
     requestAnimationFrame(step);
   }
 
-  // Queue for stats that arrive before the element is in view
-  const statQueue = {};
-
   function setVal(id, val) {
     const el = document.getElementById(id);
     if (!el) return;
-    // Store target; counter fires when element scrolls into view
-    statQueue[id] = val;
-    el.dataset.target = val;
+    el.classList.remove('loading');
+    // If element is already in viewport, animate immediately
+    const rect = el.getBoundingClientRect();
+    const inView = rect.top < window.innerHeight && rect.bottom > 0;
+    if (inView) {
+      animateStat(el, val);
+    } else {
+      // Otherwise store and wait for scroll into view
+      el.dataset.target = val;
+      el.textContent = val; // show value immediately without animation as fallback
+    }
   }
 
   function initStatCounters() {
