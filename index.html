@@ -66,7 +66,7 @@
     .page-header { padding-top: 80px; margin-bottom: 80px; }
     .hero {
       display: grid; grid-template-columns: 260px 1fr;
-      gap: 64px; align-items: start; margin-bottom: 100px;
+      gap: 64px; align-items: start; margin-bottom: 56px;
     }
     .hero-img {
       width: 100%; height: 320px;
@@ -80,25 +80,30 @@
       color: var(--red); margin-bottom: 20px;
     }
     .headline {
-      font-size: 72px; font-weight: 700;
-      line-height: 0.88; letter-spacing: -0.04em;
+      font-size: 56px; font-weight: 700;
+      line-height: 0.92; letter-spacing: -0.04em;
       color: var(--ink); margin-bottom: 32px;
     }
     .hero-about {
       font-size: 17px; color: var(--muted);
       line-height: 1.8; margin-bottom: 44px; max-width: 560px;
     }
-    .stats-row { display: flex; gap: 40px; flex-wrap: wrap; }
+    .stats-row {
+      display: flex; gap: 48px; flex-wrap: wrap;
+      justify-content: center; width: 100%;
+      margin-bottom: 100px;
+      text-align: center;
+    }
     .stat-val {
-      font-size: 34px; font-weight: 700;
-      letter-spacing: -0.03em; line-height: 1;
+      font-size: 64px; font-weight: 700;
+      letter-spacing: -0.04em; line-height: 1;
       color: var(--ink); transition: color 0.3s;
     }
     .stat-val.loading { color: var(--rule); }
     .stat-lbl {
       font-family: 'DM Mono', monospace; font-size: 11px;
       letter-spacing: 0.16em; text-transform: uppercase;
-      color: var(--faint); margin-top: 7px;
+      color: var(--faint); margin-top: 10px;
     }
 
     /* ── Section ── */
@@ -309,25 +314,30 @@
       <img src="dp.jpg" alt="Luda" class="hero-img" />
     </div>
     <div class="hero-right">
-      <div class="eyebrow">Short films about modern life</div>
-      <div class="headline">Modern<br>life,<br>on film.</div>
-      <p class="hero-about">Luda is a 23-year-old filmmaker and storyteller based in Sydney. The channel explores modern life through short films influenced by 35mm aesthetics — grain, colour emulation, intentional pacing. Videos run 2–5 minutes, say one thing, and leave. The audience comes not for advice but for recognition — the quiet relief of seeing something they've felt but never had words for.</p>
-      <div class="stats-row">
-        <div>
-          <div class="stat-val loading" id="stat-subs">—</div>
-          <div class="stat-lbl">Subscribers</div>
-        </div>
-        <div>
-          <div class="stat-val loading" id="stat-views">—</div>
-          <div class="stat-lbl">Total views</div>
-        </div>
-        <div>
-          <div class="stat-val loading" id="stat-avg3">—</div>
-          <div class="stat-lbl">Avg views (last 3)</div>
-        </div>
-      </div>
+      <div class="eyebrow">About Luda</div>
+      <div class="headline">Short films about<br>modern life.</div>
+      <p class="hero-about">Luda is a Sydney-based filmmaker, visual storyteller, and dedicated solo creator. Handling every stage of production — from the first script draft to the final colour grade — he creates thoughtful, reflective content that explores the nuances of modern life. His channel bridges intentional visual storytelling with deeply relatable human experiences, turning the quiet, familiar moments of adulthood into something meaningful and honest.</p>
     </div>
   </section>
+
+  <div class="stats-row">
+    <div>
+      <div class="stat-val loading" id="stat-subs">—</div>
+      <div class="stat-lbl">Subscribers</div>
+    </div>
+    <div>
+      <div class="stat-val loading" id="stat-views">—</div>
+      <div class="stat-lbl">Total views</div>
+    </div>
+    <div>
+      <div class="stat-val loading" id="stat-avg3">—</div>
+      <div class="stat-lbl">Avg views (last 3)</div>
+    </div>
+    <div>
+      <div class="stat-val loading" id="stat-eng">—</div>
+      <div class="stat-lbl">Avg engagement (last 3)</div>
+    </div>
+  </div>
 
   <!-- ── Audience ── -->
   <section class="section" id="audience">
@@ -665,7 +675,7 @@
       setVal('stat-subs',  fmt(ch.statistics.subscriberCount));
       setVal('stat-views', fmt(ch.statistics.viewCount));
 
-      // Avg views of 3 most recent — hardcoded IDs for accuracy
+      // Avg views + engagement rate of 3 most recent — hardcoded IDs for accuracy
       const recentIds = ['sTA9vQgPS2k', 'v1ZQZGejMu8', 'NFm2Xjx61Q8'];
       const vRes = await fetch(`${BASE}/videos?part=statistics&id=${recentIds.join(',')}&key=${YT_API_KEY}`);
       if (vRes.ok) {
@@ -673,6 +683,16 @@
         if (vids.length) {
           const avg = Math.round(vids.reduce((s, v) => s + parseInt(v.statistics?.viewCount || 0), 0) / vids.length);
           setVal('stat-avg3', fmt(avg));
+
+          // Engagement = (likes + comments) / views * 100, averaged across the 3 videos
+          const engRates = vids.map(v => {
+            const views    = parseInt(v.statistics?.viewCount    || 0);
+            const likes    = parseInt(v.statistics?.likeCount    || 0);
+            const comments = parseInt(v.statistics?.commentCount || 0);
+            return views > 0 ? ((likes + comments) / views) * 100 : 0;
+          });
+          const avgEng = engRates.reduce((a, b) => a + b, 0) / engRates.length;
+          setVal('stat-eng', avgEng.toFixed(1) + '%');
         }
       }
     } catch(err) {
