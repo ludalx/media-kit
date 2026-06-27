@@ -65,8 +65,8 @@
     /* ── Hero ── */
     .page-header { padding-top: 80px; margin-bottom: 80px; }
     .hero {
-      display: grid; grid-template-columns: 260px 1fr;
-      gap: 64px; align-items: stretch; margin-bottom: 56px;
+      display: grid; grid-template-columns: 340px 1fr;
+      gap: 72px; align-items: stretch; margin-bottom: 56px;
     }
     .hero-img-wrap { display: flex; }
     .hero-img {
@@ -74,7 +74,11 @@
       filter: grayscale(30%) contrast(1.05) sepia(8%); display: block;
       flex: 1;
     }
-    .hero-right { padding-top: 4px; }
+    .hero-right {
+      display: flex; flex-direction: column; justify-content: space-between;
+      padding-top: 0;
+    }
+    .hero-right-top {}
     .eyebrow {
       font-family: 'DM Mono', monospace; font-size: 12px;
       letter-spacing: 0.18em; text-transform: uppercase;
@@ -87,7 +91,7 @@
     }
     .hero-about {
       font-size: 17px; color: var(--muted);
-      line-height: 1.8; margin-bottom: 44px; max-width: 560px;
+      line-height: 1.8; margin-bottom: 0; max-width: 560px;
     }
     .stats-row {
       display: flex;
@@ -319,8 +323,10 @@
       <img src="dp.jpg" alt="Luda" class="hero-img" />
     </div>
     <div class="hero-right">
-      <div class="eyebrow">About Luda</div>
-      <div class="headline">Short films about<br>modern life.</div>
+      <div>
+        <div class="eyebrow">About Luda</div>
+        <div class="headline">Short films about<br>modern life.</div>
+      </div>
       <p class="hero-about">Luda is a Sydney-based filmmaker, visual storyteller, and dedicated solo creator. Handling every stage of production — from the first script draft to the final colour grade — he creates thoughtful, reflective content that explores the nuances of modern life. His channel bridges intentional visual storytelling with deeply relatable human experiences, turning the quiet, familiar moments of adulthood into something meaningful and honest.</p>
     </div>
   </section>
@@ -336,11 +342,11 @@
     </div>
     <div>
       <div class="stat-val loading" id="stat-avg3">—</div>
-      <div class="stat-lbl">Avg views (last 3)</div>
+      <div class="stat-lbl">Avg views · last 3 videos</div>
     </div>
     <div>
       <div class="stat-val loading" id="stat-eng">—</div>
-      <div class="stat-lbl">Avg engagement (last 3)</div>
+      <div class="stat-lbl">Avg engagement · last 3 videos</div>
     </div>
   </div>
 
@@ -424,7 +430,7 @@
       <!-- Geography -->
       <div>
         <div class="aud-big">US · UK · AU</div>
-        <div class="aud-big-lbl">Top 3 countries</div>
+        <div class="aud-big-lbl">Top countries</div>
         <div class="aud-chart-title">Top geographies</div>
         <div class="bar-row">
           <span class="bar-label geo">United States</span>
@@ -462,18 +468,18 @@
     <div class="collab-grid">
       <div class="collab-card">
         <div class="collab-idx">01</div>
-        <div class="collab-name">Mid-roll integration</div>
-        <div class="collab-desc">A natural break mid-video where the brand is introduced in Luda's own voice. Feels like part of the film rather than an interruption. Best for brands that fit the life on screen.</div>
+        <div class="collab-name">Mid-roll Integration</div>
+        <div class="collab-desc">A natural pause in the middle of the video where I introduce your brand in my own voice. I focus on weaving the sponsorship into the narrative flow so it feels like a genuine recommendation rather than a disruptive commercial break, keeping audience engagement high.</div>
       </div>
       <div class="collab-card">
         <div class="collab-idx">02</div>
-        <div class="collab-name">Post-roll ad read &amp; title card</div>
-        <div class="collab-desc">A dedicated segment at the end of the film with a scripted or semi-scripted read, paired with a branded title card. Clean separation from the creative content.</div>
+        <div class="collab-name">Post-roll Ad Read</div>
+        <div class="collab-desc">A dedicated space at the very end of the video for your message, paired with a clean, branded title card. This gives your brand a clear, uncluttered spotlight while providing a clean separation from the main story.</div>
       </div>
       <div class="collab-card">
         <div class="collab-idx">03</div>
-        <div class="collab-name">Product placement</div>
-        <div class="collab-desc">The product appears naturally within the film — no ad read, no verbal mention. The most seamless format. Works best for lifestyle products that fit the world being filmed.</div>
+        <div class="collab-name">Product Placement</div>
+        <div class="collab-desc">Your product is naturally incorporated into the visual background or routine of the video, with no formal ad read or verbal mention. A highly effective, non-intrusive format that works best for everyday lifestyle items that fit organically into the space.</div>
       </div>
     </div>
     <div class="collab-footer">
