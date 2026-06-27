@@ -285,17 +285,89 @@
       color: var(--red); letter-spacing: 0.06em; margin-bottom: 28px;
     }
 
+    /* ── Mobile ── */
     @media (max-width: 760px) {
+
+      /* nav */
       .site-nav { padding: 0 20px; }
+      .site-nav-inner { height: 48px; }
+      .nav-links a { font-size: 10px; padding: 6px 10px; letter-spacing: 0.08em; }
+
+      /* layout */
       .wrap { padding: 0 20px 64px; }
-      .films-scroll-wrap { margin: 0 -20px; padding: 0 20px; }
-      .hero { grid-template-columns: 1fr; gap: 32px; }
-      .hero-img { height: 260px; }
-      .headline { font-size: 52px; }
+      .page-header { padding-top: 60px; margin-bottom: 48px; }
+
+      /* hero: stack image above text */
+      .hero {
+        grid-template-columns: 1fr;
+        gap: 28px;
+        margin-bottom: 40px;
+      }
+      .hero-img-wrap { height: 380px; }
+      .hero-img { height: 100%; object-position: center 15%; }
+      .hero-right {
+        justify-content: flex-start;
+        gap: 20px;
+      }
+      .eyebrow { font-size: 10px; margin-bottom: 12px; }
+      .headline { font-size: 40px; line-height: 0.92; margin-bottom: 20px; }
+      .hero-about { font-size: 15px; line-height: 1.7; margin-bottom: 0; }
+
+      /* stats: 2x2 grid on mobile */
+      .stats-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 36px 20px;
+        justify-content: unset;
+        margin-bottom: 64px;
+        text-align: left;
+      }
+      .stat-val { font-size: 44px; }
+      .stat-lbl { font-size: 10px; letter-spacing: 0.1em; }
+
+      /* sections */
+      .section { margin-bottom: 64px; }
+      .section-label { font-size: 10px; margin-bottom: 32px; }
+
+      /* audience */
       .aud-cols { grid-template-columns: 1fr; gap: 48px; }
       .aud-big { font-size: 44px; }
-      .collab-grid { grid-template-columns: 1fr; }
-      .nav-links { gap: 0; }
+      .aud-big-lbl { font-size: 10px; margin-bottom: 24px; }
+      .aud-chart-title { font-size: 9px; }
+      .bar-label { font-size: 10px; min-width: 60px; }
+      .bar-label.geo { min-width: 110px; }
+      .bar-pct { font-size: 10px; }
+      .donut-wrap { gap: 20px; }
+      .legend-label, .legend-val { font-size: 10px; }
+
+      /* collab */
+      .collab-grid { grid-template-columns: 1fr; gap: 16px; }
+      .collab-card { padding: 28px 22px 32px; }
+      .collab-name { font-size: 16px; }
+      .collab-desc { font-size: 14px; }
+      .collab-footer { flex-direction: column; gap: 4px; }
+      .collab-footer-text, .collab-footer-email { font-size: 11px; }
+
+      /* films */
+      .films-scroll-wrap { margin: 0 -20px; padding: 0 20px; }
+      .film-card { width: 240px; }
+      .film-thumb { width: 240px; height: 135px; }
+      .film-thumb-placeholder { width: 240px; height: 135px; }
+      .film-title { font-size: 13px; }
+      .film-meta { font-size: 10px; gap: 10px; }
+
+      /* footer */
+      footer { flex-direction: column; align-items: flex-start; gap: 20px; }
+      .ft-email { font-size: 16px; word-break: break-all; }
+      .ft-handle { font-size: 11px; }
+    }
+
+    /* Tiny screens */
+    @media (max-width: 400px) {
+      .headline { font-size: 34px; }
+      .stat-val { font-size: 36px; }
+      .aud-big { font-size: 36px; }
+      .nav-links a { font-size: 9px; padding: 6px 8px; }
     }
   </style>
 </head>
