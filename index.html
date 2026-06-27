@@ -66,12 +66,13 @@
     .page-header { padding-top: 80px; margin-bottom: 80px; }
     .hero {
       display: grid; grid-template-columns: 260px 1fr;
-      gap: 64px; align-items: end; margin-bottom: 56px;
+      gap: 64px; align-items: stretch; margin-bottom: 56px;
     }
+    .hero-img-wrap { display: flex; }
     .hero-img {
-      width: 100%; height: 320px;
-      object-fit: cover; object-position: center top;
+      width: 100%; object-fit: cover; object-position: center top;
       filter: grayscale(30%) contrast(1.05) sepia(8%); display: block;
+      flex: 1;
     }
     .hero-right { padding-top: 4px; }
     .eyebrow {
@@ -196,7 +197,7 @@
     }
     .collab-footer {
       margin-top: 32px;
-      display: flex; align-items: baseline; gap: 24px; flex-wrap: wrap;
+      display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap;
     }
     .collab-footer-text {
       font-family: 'DM Mono', monospace; font-size: 11px;
@@ -236,16 +237,18 @@
       font-family: 'DM Mono', monospace; font-size: 10px;
       letter-spacing: 0.1em; color: var(--faint);
     }
-    .film-info { padding: 14px 0 0; }
+    .film-info { padding: 14px 0 0; display: flex; flex-direction: column; }
     .film-title {
       font-size: 15px; font-weight: 500; color: var(--ink);
       line-height: 1.4; margin-bottom: 8px;
+      height: calc(15px * 1.4 * 2);
       display: -webkit-box; -webkit-line-clamp: 2;
       -webkit-box-orient: vertical; overflow: hidden;
     }
     .film-meta {
       font-family: 'DM Mono', monospace; font-size: 11px;
       letter-spacing: 0.08em; color: var(--faint); display: flex; gap: 16px;
+      margin-top: auto;
     }
 
     /* ── Footer ── */
@@ -312,7 +315,7 @@
 
   <!-- ── Hero ── -->
   <section class="hero">
-    <div>
+    <div class="hero-img-wrap">
       <img src="dp.jpg" alt="Luda" class="hero-img" />
     </div>
     <div class="hero-right">
@@ -393,11 +396,13 @@
           <svg width="110" height="110" viewBox="0 0 110 110" style="flex-shrink:0">
             <g transform="rotate(-90 55 55)">
               <circle cx="55" cy="55" r="42" fill="none" stroke="#D8D5CC" stroke-width="14"/>
-              <circle cx="55" cy="55" r="42" fill="none" stroke="#111110" stroke-width="14"
-                stroke-dasharray="237.5 26.39" stroke-dashoffset="0"
-                stroke-linecap="butt"/>
+              <!-- Female (red) 10% = 26.39px — sits at 12 o'clock first -->
               <circle cx="55" cy="55" r="42" fill="none" stroke="#C8251A" stroke-width="14"
-                stroke-dasharray="26.39 237.5" stroke-dashoffset="-237.5"
+                stroke-dasharray="26.39 237.5" stroke-dashoffset="0"
+                stroke-linecap="butt"/>
+              <!-- Male (ink) 90% = 237.5px — follows immediately after -->
+              <circle cx="55" cy="55" r="42" fill="none" stroke="#111110" stroke-width="14"
+                stroke-dasharray="237.5 26.39" stroke-dashoffset="-26.39"
                 stroke-linecap="butt"/>
             </g>
           </svg>
