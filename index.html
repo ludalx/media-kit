@@ -239,10 +239,32 @@
       flex-shrink: 0; width: 280px; scroll-snap-align: start;
       text-decoration: none; color: inherit; display: block;
     }
+    .film-thumb-wrap {
+      position: relative; width: 280px; height: 158px; overflow: hidden;
+    }
     .film-thumb {
       width: 280px; height: 158px; object-fit: cover; display: block;
       filter: grayscale(20%) sepia(6%) contrast(1.05);
+      transition: transform 0.4s ease;
     }
+    .film-card:hover .film-thumb { transform: scale(1.04); }
+    .film-play {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; transition: opacity 0.25s ease;
+      pointer-events: none;
+    }
+    .film-card:hover .film-play { opacity: 1; }
+    .film-play-icon {
+      width: 48px; height: 48px;
+      border: 1.5px solid rgba(255,255,255,0.9);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(0,0,0,0.3);
+      transition: transform 0.2s ease;
+    }
+    .film-card:hover .film-play-icon { transform: scale(1.08); }
+    .film-play-icon svg { width: 14px; height: 14px; fill: white; margin-left: 3px; }
     .film-thumb-placeholder {
       width: 280px; height: 158px; background: #E0DDD6;
       display: flex; align-items: center; justify-content: center;
@@ -361,6 +383,7 @@
       /* films */
       .films-scroll-wrap { margin: 0 -20px; padding: 0 20px; }
       .film-card { width: 240px; }
+      .film-thumb-wrap { width: 240px; height: 135px; }
       .film-thumb { width: 240px; height: 135px; }
       .film-thumb-placeholder { width: 240px; height: 135px; }
       .film-title { font-size: 13px; }
@@ -614,11 +637,6 @@
     if (n >= 1_000)     return (n / 1_000).toFixed(1).replace(/\.0$/, '') + 'K';
     return String(n);
   }
-  function setVal(id, val) {
-    const el = document.getElementById(id);
-    if (!el) return;
-    el.textContent = val; el.classList.remove('loading');
-  }
   function showError(msg) {
     const el = document.getElementById('api-error');
     el.textContent = msg; el.style.display = 'block';
@@ -711,10 +729,13 @@
       FEATURED_IDS.forEach((id, i) => {
         const thumb = `https://i.ytimg.com/vi/${id}/mqdefault.jpg`;
         placeholders[i].innerHTML = `
-          <img class="film-thumb" src="${thumb}" alt="Film" loading="lazy">
+          <div class="film-thumb-wrap">
+            <img class="film-thumb" src="${thumb}" alt="${id}" loading="lazy">
+            <div class="film-play"><div class="film-play-icon"><svg viewBox="0 0 10 12"><polygon points="0,0 10,6 0,12"/></svg></div></div>
+          </div>
           <div class="film-info">
-            <div class="film-title">Watch on YouTube</div>
-            <div class="film-meta"><span>API key required</span></div>
+            <div class="film-title">Add API key for titles</div>
+            <div class="film-meta"><span>Stats via API</span></div>
           </div>`;
       });
       return;
@@ -737,7 +758,10 @@
         const comments = fmt(v.statistics?.commentCount);
         placeholders[i].innerHTML = `
           ${thumb
-            ? `<img class="film-thumb" src="${thumb}" alt="${title.replace(/"/g,'&#34;')}" loading="lazy">`
+            ? `<div class="film-thumb-wrap">
+                <img class="film-thumb" src="${thumb}" alt="${title.replace(/"/g,'&#34;')}" loading="lazy">
+                <div class="film-play"><div class="film-play-icon"><svg viewBox="0 0 10 12"><polygon points="0,0 10,6 0,12"/></svg></div></div>
+               </div>`
             : `<div class="film-thumb-placeholder"><span>No thumbnail</span></div>`}
           <div class="film-info">
             <div class="film-title">${title}</div>
@@ -749,7 +773,10 @@
       FEATURED_IDS.forEach((id, i) => {
         const thumb = `https://i.ytimg.com/vi/${id}/mqdefault.jpg`;
         placeholders[i].innerHTML = `
-          <img class="film-thumb" src="${thumb}" alt="Film" loading="lazy">
+          <div class="film-thumb-wrap">
+            <img class="film-thumb" src="${thumb}" alt="Film" loading="lazy">
+            <div class="film-play"><div class="film-play-icon"><svg viewBox="0 0 10 12"><polygon points="0,0 10,6 0,12"/></svg></div></div>
+          </div>
           <div class="film-info">
             <div class="film-title">Watch on YouTube</div>
             <div class="film-meta"><span>Add API key for stats</span></div>
@@ -799,10 +826,62 @@
     }
   }
 
+  // ── STAT COUNTER ─────────────────────────────
+  function animateStat(el, targetStr) {
+    // Parse value and suffix e.g. "127K" -> {num: 127, suffix: 'K'}
+    // or "9.4%" -> {num: 9.4, suffix: '%'}
+    const match = targetStr.match(/^([\d.]+)(.*)$/);
+    if (!match) { el.textContent = targetStr; return; }
+    const num      = parseFloat(match[1]);
+    const suffix   = match[2];
+    const isFloat  = match[1].includes('.');
+    const decimals = isFloat ? (match[1].split('.')[1] || '').length : 0;
+    const duration = 1400;
+    const start    = performance.now();
+    el.classList.remove('loading');
+    function step(now) {
+      const p    = Math.min((now - start) / duration, 1);
+      const ease = 1 - Math.pow(1 - p, 3);
+      const val  = num * ease;
+      el.textContent = (decimals > 0 ? val.toFixed(decimals) : Math.round(val)) + suffix;
+      if (p < 1) requestAnimationFrame(step);
+      else el.textContent = (decimals > 0 ? num.toFixed(decimals) : num) + suffix;
+    }
+    requestAnimationFrame(step);
+  }
+
+  // Queue for stats that arrive before the element is in view
+  const statQueue = {};
+
+  function setVal(id, val) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    // Store target; counter fires when element scrolls into view
+    statQueue[id] = val;
+    el.dataset.target = val;
+  }
+
+  function initStatCounters() {
+    const statIds = ['stat-subs', 'stat-views', 'stat-avg3', 'stat-eng'];
+    statIds.forEach(id => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const obs = new IntersectionObserver(entries => {
+        if (entries[0].isIntersecting) {
+          const target = el.dataset.target;
+          if (target) animateStat(el, target);
+          obs.disconnect();
+        }
+      }, { threshold: 0.3 });
+      obs.observe(el);
+    });
+  }
+
   // ── INIT ─────────────────────────────────────
   initDragScroll();
   initNavHighlight();
   initBarAnimations();
+  initStatCounters();
   loadChannelStats();
   loadFeaturedFilms();
 })();
