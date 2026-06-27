@@ -601,22 +601,16 @@
       return a;
     });
 
-    if (!YT_API_KEY || YT_API_KEY === 'YOUR_YOUTUBE_API_KEY') {
-      // No API key: show thumbnails + fetch titles via oEmbed (no auth needed)
-      await Promise.all(FEATURED_IDS.map(async (id, i) => {
+    if (!YT_API_KEY) {
+      FEATURED_IDS.forEach((id, i) => {
         const thumb = `https://i.ytimg.com/vi/${id}/mqdefault.jpg`;
-        let title = 'Watch on YouTube';
-        try {
-          const oe = await fetch(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${id}&format=json`);
-          if (oe.ok) { const d = await oe.json(); title = d.title || title; }
-        } catch(_) {}
         placeholders[i].innerHTML = `
-          <img class="film-thumb" src="${thumb}" alt="${title.replace(/"/g,'&#34;')}" loading="lazy">
+          <img class="film-thumb" src="${thumb}" alt="Film" loading="lazy">
           <div class="film-info">
-            <div class="film-title">${title}</div>
-            <div class="film-meta"><span>Add API key for stats</span></div>
+            <div class="film-title">Watch on YouTube</div>
+            <div class="film-meta"><span>API key required</span></div>
           </div>`;
-      }));
+      });
       return;
     }
 
@@ -633,6 +627,7 @@
         const thumb    = v.snippet?.thumbnails?.medium?.url || '';
         const title    = v.snippet?.title || 'Untitled';
         const views    = fmt(v.statistics?.viewCount);
+        const likes    = fmt(v.statistics?.likeCount);
         const comments = fmt(v.statistics?.commentCount);
         placeholders[i].innerHTML = `
           ${thumb
@@ -640,9 +635,8 @@
             : `<div class="film-thumb-placeholder"><span>No thumbnail</span></div>`}
           <div class="film-info">
             <div class="film-title">${title}</div>
-            <div class="film-meta"><span>${views} views</span><span>${comments} comments</span></div>
+            <div class="film-meta"><span>${views} views</span><span>${likes} likes</span><span>${comments} comments</span></div>
           </div>`;
-      });
     } catch(err) {
       console.error(err);
       FEATURED_IDS.forEach((id, i) => {
@@ -659,12 +653,6 @@
 
   // ── CHANNEL STATS ────────────────────────────
   async function loadChannelStats() {
-    if (!YT_API_KEY || YT_API_KEY === 'YOUR_YOUTUBE_API_KEY') {
-      setVal('stat-subs',  '122K');
-      setVal('stat-views', '3.2M');
-      setVal('stat-avg3',  '—');
-      return;
-    }
     const BASE = 'https://www.googleapis.com/youtube/v3';
     try {
       const chRes = await fetch(`${BASE}/channels?part=statistics,contentDetails&id=${CHANNEL_ID}&key=${YT_API_KEY}`);
@@ -675,21 +663,14 @@
       setVal('stat-subs',  fmt(ch.statistics.subscriberCount));
       setVal('stat-views', fmt(ch.statistics.viewCount));
 
-      // Avg views of 3 most recent uploads
-      const uploadsId = ch.contentDetails?.relatedPlaylists?.uploads;
-      if (uploadsId) {
-        const plRes = await fetch(`${BASE}/playlistItems?part=snippet&maxResults=3&playlistId=${uploadsId}&key=${YT_API_KEY}`);
-        if (plRes.ok) {
-          const recentIds = ((await plRes.json()).items || [])
-            .map(i => i.snippet?.resourceId?.videoId).filter(Boolean);
-          if (recentIds.length) {
-            const vRes = await fetch(`${BASE}/videos?part=statistics&id=${recentIds.join(',')}&key=${YT_API_KEY}`);
-            if (vRes.ok) {
-              const vids = (await vRes.json()).items || [];
-              const avg = Math.round(vids.reduce((s, v) => s + parseInt(v.statistics?.viewCount || 0), 0) / vids.length);
-              setVal('stat-avg3', fmt(avg));
-            }
-          }
+      // Avg views of 3 most recent — hardcoded IDs for accuracy
+      const recentIds = ['sTA9vQgPS2k', 'v1ZQZGejMu8', 'NFm2Xjx61Q8'];
+      const vRes = await fetch(`${BASE}/videos?part=statistics&id=${recentIds.join(',')}&key=${YT_API_KEY}`);
+      if (vRes.ok) {
+        const vids = (await vRes.json()).items || [];
+        if (vids.length) {
+          const avg = Math.round(vids.reduce((s, v) => s + parseInt(v.statistics?.viewCount || 0), 0) / vids.length);
+          setVal('stat-avg3', fmt(avg));
         }
       }
     } catch(err) {
